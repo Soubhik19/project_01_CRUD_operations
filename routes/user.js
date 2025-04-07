@@ -4,41 +4,13 @@ const express=require ("express");
 const router =express.Router();
 
 
-
-//Middleware  --as of now we use it as a plugin 
-app.use(express.urlencoded({extended:false}));
-
-//middleware 
-app.use((req,res,next)=>{
-    console.log("Hello from middleware 1");
-    req.myUsername ="Soubhik";
-    next();
-})
-
-app.use((req,res,next)=>{
-    console.log("Hello from middleware 2",req.myUsername);
-    next();
-})
-
-
-//for html rendeering 
-router.get("/users",async(req,res)=>{
-    const allDbUsers =await User.find({});
-    const html=`
-    <ul>
-    ${allDbUsers.map((user)=>`<li>${user.firstName} - ${user.email}</li>`).join("")}
-    </ul>`
-    res.send(html);
-})
-
-
-router.get("/api/users",async(req,res)=>{            //when we read the JSON details of the user we rout on /api/users
+router.get("/",async(req,res)=>{            //when we read the JSON details of the user we rout on /api/users
     const allDbUsers =await User.find({});
     return res.json(allDbUsers);
 })
 
 //REST API
-router.get("/api/users/:id",async(req,res)=>{       //specifically for find an JSON id details
+router.get("/:id",async(req,res)=>{       //specifically for find an JSON id details
 const user =await User.findById(req.params.id);
 if(!user)return res.status(404).json({error: "user not found on databse"});
 return res.json(user);
@@ -46,7 +18,7 @@ return res.json(user);
 
 //POST
 //create any user
-router.post("/api/users",async(req,res)=>{
+router.post("/",async(req,res)=>{
     const body=req.body; //frontend se data uthayenge
     if(
        !body ||
@@ -73,18 +45,18 @@ return res.status(201).json({ status: "success"});
     
 })
 //Patch
-router.patch("/api/users/:id",async(req,res)=>{
+router.patch("/:id",async(req,res)=>{
     await User.findByIdAndUpdate(req.params.id,{lastName : "Changed"});
     return res.json({status:"Success"})
 })
 //Delete
-router.delete("/api/users/:id",async(req,res)=>{
+router.delete("/:id",async(req,res)=>{
 await User.findByIdAndDelete(req.params.id)
     return res.json({status:"successfullly deleted"})
 });  
 
-
-
+//export
+module.exports =router;
 
 
 

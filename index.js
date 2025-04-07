@@ -2,19 +2,21 @@ const express=require ("express");
 const app=express();
 const mongoose =require("mongoose");
 const PORT = 8005;
-//const users =require("./MOCK_DATA.json");
 const fs=require('fs');
 const { type } = require("os");
-
+const userRouter =require('./routes/user');
+const {connectMongoDB}=require('./connection');
+const {logReqRes}=require("./middlewares/index")
 
 //connection
-mongoose.connect('mongodb://127.0.0.1:27017/project-app-1')
-.then(()=>console.log("MongoDB connected "))
-.catch((err)=>console.log("MogoDB Error",err));
+connectMongoDB("mongodb://127.0.0.1:27017/project-app-1");
+
+app.use(express.urlencoded({extended : false}));
+app.use(logReqRes("log.txt"));
 
 
-
-
+//Routes
+app.use("/user",userRouter);
 
 app.listen(PORT,()=>{
     console.log(`server started on PORT :${PORT}`)
